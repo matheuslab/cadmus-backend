@@ -1,15 +1,14 @@
 var express = require('express');
 var kraken = require('kraken-js');
+var routes = require('./routes');
+var cors = require('cors');
 
 var app = express();
 
-app.use(kraken());
+app.use(cors());
+app.use(express.json());
+app.use(routes);
 
-app.get('/', function (request, response) {
-    return response.json({
-        stat:'bla',
-        test:'bas'
-    });
-});
+app.use(kraken());
 
 app.listen(3333);
