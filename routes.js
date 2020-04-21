@@ -2,12 +2,10 @@ var express = require('express');
 
 var routes = express.Router();
 
-routes.post('/challenge', function (request, response) {
-    var data = request.body;
+var ChallengeController = require('./controllers/ChallengeController');
 
-    console.log(data);
+routes.post('/challenge', ChallengeController.createArea);
 
-    return response.json();
-});
+routes.get('/challenge', ChallengeController.sendResult);
 
 module.exports = routes;
