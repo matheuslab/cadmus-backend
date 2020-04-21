@@ -32,6 +32,83 @@ function createMap (data) {
     return arr;
 }
 
+function cloudGrowth (map, data) {
+    let tempArr= JSON.parse(JSON.stringify( map ));
+    let test = JSON.parse(JSON.stringify( map ));
+    let hasfirstAirportAffected = false;
+    let dayOfFirstInfection = false;
+    let countAirportsInfected = 0;
+    let daysToTotalInfection = 0;
+
+    for(let days = 2;data.airport-countAirportsInfected>0;days++){
+        for(let i=0;i<data.height;i++){
+            for(let j=0;j<data.width;j++){
+                if(test[i][j] === '*'){
+                    let up = i+1 < data.height ? tempArr[i+1][j]: false;
+                    let down = i-1 >= 0 ? tempArr[i-1][j] : false;
+                    let left = j-1 >= 0 ? tempArr[i][j-1] : false;
+                    let right = j+1 < data.width ? tempArr[i][j+1]: false;
+
+                    if(up){
+                        if(up === 'A'){
+                            if(!hasfirstAirportAffected){
+                                hasfirstAirportAffected = true;
+                                dayOfFirstInfection = days;
+                            }
+                            countAirportsInfected+=1;
+                        }
+                        tempArr[i+1][j] = '*';
+                    }
+
+                    if(down){
+                        if(down === 'A'){
+                            if(!hasfirstAirportAffected){
+                                hasfirstAirportAffected = true;
+                                dayOfFirstInfection = days;
+                            }
+                            countAirportsInfected+=1;
+                        }
+                        tempArr[i-1][j] = '*';
+                    }
+
+                    if(left){
+                        if(left === 'A'){
+                            if(!hasfirstAirportAffected){
+                                hasfirstAirportAffected = true;
+                                dayOfFirstInfection = days;
+                            }
+                            countAirportsInfected+=1;
+                        }
+                        tempArr[i][j-1] = '*';
+                    }
+
+                    if(right){
+                        if(right === 'A'){
+                            if(!hasfirstAirportAffected){
+                                hasfirstAirportAffected = true;
+                                dayOfFirstInfection = days;
+                            }
+                            countAirportsInfected+=1;
+                        }
+                        tempArr[i][j+1] = '*';
+                    }
+                }
+            }
+        }
+        test = JSON.parse(JSON.stringify( tempArr ));
+        console.log(countAirportsInfected);
+        if(data.airport-countAirportsInfected <= 0){
+            daysToTotalInfection = days;
+        }
+    }
+
+    return {
+        ...test,
+        dayOfFirstInfection,
+        daysToTotalInfection
+    };
+}
+
 module.exports = {
 
     createArea(request, response){
@@ -45,7 +122,8 @@ module.exports = {
         var map = createMap(data)
 
         return response.json({
-            ...map,
+            map,
+            final: cloudGrowth(map, data),
         });
     }
 }
